@@ -69,3 +69,4 @@ const AddInfo: React.FC = () => {
 };
 
 export default AddInfo;
+// hi
