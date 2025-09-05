@@ -3,7 +3,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 interface PersonalInfo {
   name: string;
   email: string;
-  phone: number;
+  phone: string;
   address: string;
 }
 
@@ -20,29 +20,61 @@ interface Education {
   postgraduation: EducationEntry;
 }
 
-interface ApplicationTypes {
+interface SkillndQua {
+  skill: string,
+  certificate: string
+
+}
+
+interface WorkExpRow {
+  id: number;
+  company: string;
+  title: string;
+  duration: string;
+}
+export interface ApplicationTypes {
   personalInfo: PersonalInfo;
   education: Education;
+  resume: string | null;
+  coverLetter: string | null;
+  skillndqua: SkillndQua;
+  workExp: WorkExpRow[];
 }
 
 const initialState: ApplicationTypes = {
   personalInfo: {
     name: "",
     email: "",
-    phone: 0,
+    phone: '',
     address: "",
   },
-   education: {
+  education: {
     ssc: { university: "", cgpa: '', passingyear: '' },
-    hsc: { university: "", cgpa: '', passingyear: ''},
+    hsc: { university: "", cgpa: '', passingyear: '' },
     graduation: { university: "", cgpa: '', passingyear: '' },
     postgraduation: { university: "", cgpa: '', passingyear: '' },
   },
+
+  resume: null,
+  coverLetter: null,
+  skillndqua: {
+    skill: '',
+    certificate: ""
+  },
+  workExp: [],
+
+
 };
 const applicationformSlice = createSlice({
   name: "applicationform",
   initialState,
   reducers: {
+    updatePersnalInfo(state, action) {
+      state.personalInfo = {
+        ...state.personalInfo,
+        ...action.payload
+      }
+    },
 
     updateEducation(
       state,
@@ -51,9 +83,21 @@ const applicationformSlice = createSlice({
       const { edu, data } = action.payload;
       state.education[edu] = { ...state.education[edu], ...data };
     },
+    setResume(state, action: PayloadAction<string | null>) {
+      state.resume = action.payload;
+    },
+    setCoverLetter(state, action: PayloadAction<string | null>) {
+      state.coverLetter = action.payload;
+    },
+    setSkilladQua(state, action: PayloadAction<SkillndQua>) {
+      state.skillndqua = action.payload
+    },
+    setWorkExp(state, action: PayloadAction<WorkExpRow[]>) {
+      state.workExp = action.payload;
+    },
   },
 });
 
-export const { updateEducation } = applicationformSlice.actions;
+export const { updatePersnalInfo, updateEducation, setCoverLetter, setResume, setSkilladQua, setWorkExp } = applicationformSlice.actions;
 
 export default applicationformSlice.reducer;

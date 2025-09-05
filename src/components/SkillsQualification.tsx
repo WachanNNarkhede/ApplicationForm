@@ -3,69 +3,86 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useAppSelector } from "@/app/hooks";
+import { setSkilladQua } from "@/app/slices";
 
 const SkillsQualifications = () => {
-  const [skill, setSkills] = useState("");
-  const [certf, setcertf] = useState("");
+  const dispatch = useDispatch();
+  const { skillndqua } = useAppSelector((state) => state.applicationForm);
 
-  const handlesaveskills = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSkills(e.target.value);
-  };
-  const handlesavecertf = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setcertf(e.target.value);
+  const [localSkills, setLocalSkills] = useState<{ skill: string; certificate: string }>({
+    skill: skillndqua?.skill || "",
+    certificate: skillndqua?.certificate || "",
+  });
+
+  const [isUploaded, setIsUploaded] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setLocalSkills((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const hnadleSubmit = () => {
-    if (!skill && !certf) {
-      alert("Please enter at least one skill or certification");
+  const handleSubmit = () => {
+    if (!localSkills.skill && !localSkills.certificate) {
+      alert(" Please enter at least one skill or certification");
       return;
     }
 
-    const mydata = { skill, certf };
-    localStorage.setItem("skills", JSON.stringify(mydata));
+    localStorage.setItem("skills", JSON.stringify(localSkills));
+    dispatch(setSkilladQua(localSkills));
 
-    alert("Fields Updated ");
+    alert("Fields Updated");
+    setIsUploaded(true);
   };
 
- useEffect(() => {
-  const storedData = JSON.parse(localStorage.getItem("skills") || "{}");
-  if (storedData) {
-    setSkills(storedData.skill || "");
-    setcertf(storedData.certf || "");
-  }
-}, []);
-
+  useEffect(() => {
+    const storedData = localStorage.getItem("skills");
+    if (storedData) {
+      const parsedData = JSON.parse(storedData);
+      setLocalSkills({
+        skill: parsedData.skill || "",
+        certificate: parsedData.certificate || "",
+      });
+      dispatch(setSkilladQua(parsedData));
+      setIsUploaded(true);
+    }
+  }, [dispatch]);
 
   return (
-    <div className="bg-gray-100 h-80 p-4">
-      <form className="border border-gray-300 p-4">
+    <div className="bg-gray-100 p-4 rounded-lg shadow-sm">
+      <form
+        onSubmit={(e) => e.preventDefault()}
+        className="border border-gray-300 p-4 rounded-md bg-white"
+      >
         <Table>
           <TableBody>
             <TableRow>
               <TableCell>
-                <Label>
-                  <strong>Technical Skills</strong>
-                </Label>
+                <Label className="font-semibold">Technical Skills</Label>
               </TableCell>
               <TableCell>
-                <Label>
-                  <strong>Certifications</strong>
-                </Label>
+                <Label className="font-semibold">Certifications</Label>
               </TableCell>
             </TableRow>
 
             <TableRow>
               <TableCell>
                 <Input
-                  value={skill}
-                  onChange={handlesaveskills}
+                  name="skill"
+                  value={localSkills.skill}
+                  onChange={handleChange}
                   placeholder="Enter your technical skills"
                 />
               </TableCell>
               <TableCell>
                 <Input
-                  value={certf}
-                  onChange={handlesavecertf}
+                  name="certificate"
+                  value={localSkills.certificate}
+                  onChange={handleChange}
                   placeholder="Enter your certifications"
                 />
               </TableCell>
@@ -74,8 +91,8 @@ const SkillsQualifications = () => {
         </Table>
 
         <div className="flex justify-end gap-2 mt-4">
-          <Button type="button" variant="outline" onClick={hnadleSubmit}>
-            Submit
+          <Button type="button" variant="outline" onClick={handleSubmit}>
+            {isUploaded ? "Update" : "Submit"}
           </Button>
         </div>
       </form>

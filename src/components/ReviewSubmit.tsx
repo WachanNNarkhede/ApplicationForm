@@ -1,230 +1,130 @@
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+// src/components/ReviewSubmit.tsx
+import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { useAppSelector } from "@/app/hooks";
 
-// Define interfaces to match the data structures
-interface PersonalInfo {
-  name: string;
-  email: string;
-  phone: string; // Stored as string in localStorage
-  address: string;
-}
-
-interface EducationEntry {
-  university: string;
-  cgpa: string;
-  passingyear: string;
-}
-
-interface Education {
-  ssc: EducationEntry;
-  hsc: EducationEntry;
-  graduation: EducationEntry;
-  postgraduation: EducationEntry;
-}
-
-interface Skills {
-  skill: string;
-  certf: string;
-}
-
-interface WorkExpRow {
-  id: number;
-  company: string;
-  title: string;
-  duration: string;
-}
-
-const ReviewSubmit = () => {
-  const [personal, setPersonal] = useState<PersonalInfo | null>(null);
-  const [education, setEducation] = useState<Education | null>(null);
-  const [skills, setSkills] = useState<Skills | null>(null);
-  const [workExp, setWorkExp] = useState<WorkExpRow[]>([]);
-  const [resume, setResume] = useState<string | null>(null);
-  const [coverLetter, setCoverLetter] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Fetch data from localStorage
-    setPersonal(JSON.parse(localStorage.getItem("formData") || "null"));
-    setEducation(JSON.parse(localStorage.getItem("educationData") || "null"));
-    setSkills(JSON.parse(localStorage.getItem("skills") || "null"));
-    setWorkExp(JSON.parse(localStorage.getItem("exp") || "[]"));
-    setResume(localStorage.getItem("resume") || null); // Stored as base64 string
-    setCoverLetter(localStorage.getItem("coverLetter") || null); // Stored as base64 string
-  }, []);
+const ReviewSubmit: React.FC = () => {
+  const { personalInfo } = useAppSelector((state) => state.applicationForm);
+  const { education } = useAppSelector((state) => state.applicationForm);
+  const { skillndqua } = useAppSelector((state) => state.applicationForm);
+  const { workExp } = useAppSelector((state) => state.applicationForm);
+  const { resume } = useAppSelector((state) => state.applicationForm);
+  const { coverLetter } = useAppSelector((state) => state.applicationForm);
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="space-y-6 p-6">
       <Card>
-        <CardHeader>
-          <CardTitle>Personal Information</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {personal ? (
-            <div className="space-y-1 text-sm">
+        <CardContent className="p-4">
+          <h2 className=" font-bold mb-2">Personal Information</h2>
+          {personalInfo.address && personalInfo.email&& personalInfo.name&& personalInfo.phone ? (
+            <div>
               <p>
-                <b>Name:</b> {personal.name}
+                <b>Name:</b> {personalInfo.name}
               </p>
               <p>
-                <b>Email:</b> {personal.email}
+                <b>Email:</b> {personalInfo.email}
               </p>
               <p>
-                <b>Phone:</b> {personal.phone}
+                <b>Phone:</b> {personalInfo.phone}
               </p>
               <p>
-                <b>Address:</b> {personal.address}
+                <b>Address:</b> {personalInfo.address}
               </p>
             </div>
           ) : (
-            <p className="text-gray-500 text-sm">No personal information saved.</p>
+            <p className="text-red-500 text-sm">No personal info saved.</p>
           )}
         </CardContent>
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Education</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {education ? (
-            <div className="space-y-4 text-sm">
+        <CardContent className="p-4">
+          <h2 className="font-bold mb-2">Education</h2>
+          {
+          education.ssc?.university &&
+            education.hsc?.university &&
+            education.graduation?.university &&
+            education.postgraduation?.university ? (
+            <div>
               <div>
-                <p>
-                  <b>SSC</b>
-                </p>
-                <p>
-                  University: {education.ssc.university || "Not provided"}
-                </p>
-                <p>CGPA: {education.ssc.cgpa || "Not provided"}</p>
-                <p>
-                  Passing Year: {education.ssc.passingyear || "Not provided"}
-                </p>
-              </div>
-              <div>
-                <p>
-                  <b>HSC</b>
-                </p>
-                <p>
-                  University: {education.hsc.university || "Not provided"}
-                </p>
-                <p>CGPA: {education.hsc.cgpa || "Not provided"}</p>
-                <p>
-                  Passing Year: {education.hsc.passingyear || "Not provided"}
-                </p>
-              </div>
-              <div>
-                <p>
-                  <b>Graduation</b>
-                </p>
-                <p>
-                  University: {education.graduation.university || "Not provided"}
-                </p>
-                <p>CGPA: {education.graduation.cgpa || "Not provided"}</p>
-                <p>
-                  Passing Year: {education.graduation.passingyear || "Not provided"}
-                </p>
-              </div>
-              <div>
-                <p>
-                  <b>Post Graduation</b>
-                </p>
-                <p>
-                  University: {education.postgraduation.university || "Not provided"}
-                </p>
-                <p>
-                  CGPA: {education.postgraduation.cgpa || "Not provided"}
-                </p>
-                <p>
-                  Passing Year: {education.postgraduation.passingyear || "Not provided"}
-                </p>
+                <div>
+                  <b>SSC:</b> {education.ssc.university} | CGPA:
+                  {education.ssc.cgpa} | Passing Year:
+                  {education.ssc.passingyear}
+                </div>
+                <div>
+                  <b>HSC:</b> {education.hsc.university} | CGPA:
+                  {education.hsc.cgpa} | Passing Year:
+                  {education.hsc.passingyear}
+                </div>
+                <div>
+                  <b>Graduation:</b> {education.graduation.university}| CGPA:{" "}
+                  {education.graduation.cgpa} | Passing Year:
+                  {education.graduation.passingyear}
+                </div>
+                <div>
+                  <b>Post Graduation:</b>
+                  {education.postgraduation.university} | CGPA:
+                  {education.postgraduation.cgpa} | Passing Year:
+                  {education.postgraduation.passingyear}
+                </div>
               </div>
             </div>
           ) : (
-            <p className="text-gray-500 text-sm">No education data saved.</p>
+            <p className="text-red-500 text-sm">No education info saved.</p>
           )}
         </CardContent>
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Skills & Certifications</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {skills ? (
-            <div className="space-y-1 text-sm">
+        <CardContent className="p-4">
+          <h2 className="font-bold mb-2">skills and Certifications</h2>
+          {skillndqua.certificate && skillndqua.skill ? (
+            <div>
               <p>
-                <b>Skills:</b> {skills.skill || "Not provided"}
+                <b>Skill:</b> {skillndqua.skill}
               </p>
               <p>
-                <b>Certifications:</b> {skills.certf || "Not provided"}
+                <b>Certification:</b> {skillndqua.certificate}
               </p>
             </div>
           ) : (
-            <p className="text-gray-500 text-sm">No skills or certifications saved.</p>
+            <p className="text-red-500 text-sm">No skillndqua saved.</p>
           )}
         </CardContent>
       </Card>
-
       <Card>
-        <CardHeader>
-          <CardTitle>Work Experience</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {workExp.length > 0 ? (
-            <ul className="space-y-2 text-sm">
-              {workExp.map((row) => (
-                <li key={row.id} className="border p-2 rounded">
-                  <p>
-                    <b>Company:</b> {row.company}
-                  </p>
-                  <p>
-                    <b>Title:</b> {row.title}
-                  </p>
-                  <p>
-                    <b>Duration:</b> {row.duration}
-                  </p>
+        <CardContent className="p-4">
+          <h2 className="text-lg font-bold mb-2">Work Experience</h2>
+          {workExp && workExp.length  > 0 ? (
+            <ul className=" text-sm ">
+              {workExp.map((exp) => (
+                <li key={exp.id}>
+                  {exp.company} : {exp.title} , {exp.duration}
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-gray-500 text-sm">No work experience saved.</p>
+            <p className="text-red-500 text-sm">No work experience saved.</p>
           )}
         </CardContent>
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Uploads</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          {resume ? (
-            <a
-              href={resume}
-              download="resume.pdf"
-              className="text-blue-600 underline text-sm"
-            >
-              Download Resume
-            </a>
-          ) : (
-            <p className="text-gray-500 text-sm">No resume uploaded.</p>
-          )}
-          {coverLetter ? (
-            <a
-              href={coverLetter}
-              download="coverLetter.pdf"
-              className="text-blue-600 underline text-sm"
-            >
-              Download Cover Letter
-            </a>
-          ) : (
-            <p className="text-gray-500 text-sm">No cover letter uploaded.</p>
-          )}
+        <CardContent className="p-4">
+          <h2 className="text-lg font-bold mb-2">Documents</h2>
+          <div className="text-sm space-y-1">
+            <p typeof="link">
+              <span className={resume ? "text-green-600"  : "text-red-600"}>
+                <b>Resume:</b> {resume ? "Uploaded " : "Not uploaded"}
+              </span>
+            </p>
+            <span className={coverLetter ? "text-green-600" : "text-red-600"}>
+              <b>coverLetter</b> {coverLetter ? "Uploaded " : "Not uploaded"}
+            </span>
+          </div>
         </CardContent>
       </Card>
-
-      <div className="flex justify-end">
-        <Button className="bg-green-600 text-white">Final Submit</Button>
-      </div>
     </div>
   );
 };

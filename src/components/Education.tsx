@@ -4,38 +4,55 @@ import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
 import { updateEducation } from "@/app/slices";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Education() {
-  const dispatch = useAppDispatch();
+ const dispatch = useAppDispatch();
   const { education } = useAppSelector((state) => state.applicationForm);
+  const [isUploaded, setIsUploaded] = useState(false); // ✅ Track upload status
+
+  const [formData, setFormData] = useState(education);
 
   const handleChange = (
     edu: keyof typeof education,
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { name, value } = e.target;
-    dispatch(updateEducation({ edu, data: { [name]: value } }));
+    setFormData({
+      ...formData,
+      [edu]: {
+        ...formData[edu],
+        [name]: value,
+      },
+    });
   };
 
   const handleSubmit = () => {
-    if (education.graduation.cgpa) {
-      localStorage.setItem("educationData", JSON.stringify(education));
-      alert("Education data saved to localStorage!");
+    if (formData.graduation.cgpa) {
+      localStorage.setItem("educationData", JSON.stringify(formData));
+
+      (Object.keys(formData) as (keyof typeof education)[]).forEach((eduKey) => {
+        dispatch(updateEducation({ edu: eduKey, data: formData[eduKey] }));
+      });
+
+      alert("Education data saved ");
+         setIsUploaded(true); 
     } else {
-      alert("incomplete");
+      alert("Incomplete ");
     }
   };
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem("educationData") || "{}");
+    if (saved && Object.keys(saved).length > 0) {
+      setFormData(saved);
 
-  useEffect(()=>{
-    const mydata = JSON.parse(localStorage.getItem('educationData')||"{}")
+        setIsUploaded(true); 
 
-    if(mydata){
-      dispatch(updateEducation(mydata))
-
+      (Object.keys(saved) as (keyof typeof education)[]).forEach((eduKey) => {
+        dispatch(updateEducation({ edu: eduKey, data: saved[eduKey] }));
+      });
     }
-  },[dispatch])
-  
+  }, [dispatch]);
 
   return (
     <div className="bg-gray-100 p-4">
@@ -74,30 +91,31 @@ export default function Education() {
               <TableCell>
                 <Input
                   name="university"
-                  value={education.ssc.university}
+                  value={formData.ssc.university}
                   placeholder="Enter University"
-                  onChange={(e) => handleChange("ssc", e)}
+                                    onChange={(e) => handleChange("ssc", e)}
+
                 />
               </TableCell>
               <TableCell>
                 <Input
                   name="cgpa"
-                  value={education.ssc.cgpa}
+                  value={formData.ssc.cgpa}
                   placeholder="Enter CGPA"
+                  type="number"
                   onChange={(e) => handleChange("ssc", e)}
                 />
               </TableCell>
               <TableCell>
                 <Input
                   name="passingyear"
-                  value={education.ssc.passingyear}
+                  type="number"
+                  value={formData.ssc.passingyear}
                   placeholder="Enter Passing Year"
                   onChange={(e) => handleChange("ssc", e)}
                 />
               </TableCell>
             </TableRow>
-
-            {/* HSC Row */}
             <TableRow>
               <TableCell>
                 <Label>
@@ -107,7 +125,7 @@ export default function Education() {
               <TableCell>
                 <Input
                   name="university"
-                  value={education.hsc.university}
+                  value={formData.hsc.university}
                   placeholder="Enter University"
                   onChange={(e) => handleChange("hsc", e)}
                 />
@@ -115,7 +133,9 @@ export default function Education() {
               <TableCell>
                 <Input
                   name="cgpa"
-                  value={education.hsc.cgpa}
+                  type="number"
+                  value={
+                    formData.hsc.cgpa}
                   placeholder="Enter CGPA"
                   onChange={(e) => handleChange("hsc", e)}
                 />
@@ -123,14 +143,15 @@ export default function Education() {
               <TableCell>
                 <Input
                   name="passingyear"
-                  value={education.hsc.passingyear}
+                  type="number"
+                  value={
+                    formData.hsc.passingyear}
                   placeholder="Enter Passing Year"
                   onChange={(e) => handleChange("hsc", e)}
                 />
               </TableCell>
             </TableRow>
 
-            {/* Graduation Row */}
             <TableRow>
               <TableCell>
                 <Label>
@@ -140,7 +161,7 @@ export default function Education() {
               <TableCell>
                 <Input
                   name="university"
-                  value={education.graduation.university}
+                  value={formData.graduation.university}
                   placeholder="Enter University"
                   onChange={(e) => handleChange("graduation", e)}
                 />
@@ -148,7 +169,8 @@ export default function Education() {
               <TableCell>
                 <Input
                   name="cgpa"
-                  value={education.graduation.cgpa}
+                  type="number"
+                  value={formData.graduation.cgpa}
                   placeholder="Enter CGPA"
                   onChange={(e) => handleChange("graduation", e)}
                 />
@@ -156,7 +178,8 @@ export default function Education() {
               <TableCell>
                 <Input
                   name="passingyear"
-                  value={education.graduation.passingyear}
+                  type="number"
+                  value={formData.graduation.passingyear}
                   placeholder="Enter Passing Year"
                   onChange={(e) => handleChange("graduation", e)}
                 />
@@ -173,7 +196,7 @@ export default function Education() {
               <TableCell>
                 <Input
                   name="university"
-                  value={education.postgraduation.university}
+                  value={formData.postgraduation.university}
                   placeholder="Enter University"
                   onChange={(e) => handleChange("postgraduation", e)}
                 />
@@ -181,7 +204,8 @@ export default function Education() {
               <TableCell>
                 <Input
                   name="cgpa"
-                  value={education.postgraduation.cgpa}
+                  type="number"
+                  value={formData.postgraduation.cgpa}
                   placeholder="Enter CGPA"
                   onChange={(e) => handleChange("postgraduation", e)}
                 />
@@ -189,7 +213,8 @@ export default function Education() {
               <TableCell>
                 <Input
                   name="passingyear"
-                  value={education.postgraduation.passingyear}
+                  type="number"
+                  value={formData.postgraduation.passingyear}
                   placeholder="Enter Passing Year"
                   onChange={(e) => handleChange("postgraduation", e)}
                 />
@@ -200,8 +225,7 @@ export default function Education() {
 
         <div className="flex justify-end gap-2 mt-4">
           <Button type="button" variant="outline" onClick={handleSubmit}>
-            Submit
-          </Button>
+{isUploaded ? "Submit edited data" : "Submit"}          </Button>
         </div>
       </form>
     </div>
