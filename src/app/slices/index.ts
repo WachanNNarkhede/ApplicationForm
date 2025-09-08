@@ -41,7 +41,7 @@ export interface ApplicationTypes {
   workExp: WorkExpRow[];
 }
 
-const initialState: ApplicationTypes = {
+export const initialState: ApplicationTypes = {
   personalInfo: {
     name: "",
     email: "",
@@ -95,9 +95,12 @@ const applicationformSlice = createSlice({
     setWorkExp(state, action: PayloadAction<WorkExpRow[]>) {
       state.workExp = action.payload;
     },
+    resetApplicationForm() {
+      return initialState; 
+    },
   },
 });
 
-export const { updatePersnalInfo, updateEducation, setCoverLetter, setResume, setSkilladQua, setWorkExp } = applicationformSlice.actions;
+export const { resetApplicationForm,updatePersnalInfo, updateEducation, setCoverLetter, setResume, setSkilladQua, setWorkExp } = applicationformSlice.actions;
 
 export default applicationformSlice.reducer;

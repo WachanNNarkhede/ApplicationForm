@@ -1,19 +1,23 @@
 // src/pages/ThankYou.tsx
 import { CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision";
+
 
 export default function ThankYou() {
   const navigate = useNavigate();
 
-  const handleGoHome = () => {
-    localStorage.clear(); 
-    window.location.reload();
-    navigate("/"); 
+ const handleGoHome = () => {
+    localStorage.clear();
+    navigate("/", { replace: true });
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white px-4">
-      <div className="max-w-md w-full bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 text-center border border-white/20">
+
+            <BackgroundBeamsWithCollision className="bg-transparent ml-96">
+ 
+      <div className="max-w-md  transform -translate-x-58 w-full bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-12 text-center border border-white/20">
         <div className="flex justify-center mb-6">
           <CheckCircle className="w-20 h-20 text-green-400 animate-bounce" />
         </div>
@@ -34,6 +38,7 @@ export default function ThankYou() {
           </button>
         </div>
       </div>
+      </BackgroundBeamsWithCollision>
     </div>
   );
 }

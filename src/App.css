@@ -1,1 +1,12 @@
-// dc
+
+body {
+  font-family: 'Lato', sans-serif;
+}
+
+.heading {
+  font-family: 'Merriweather', serif;
+}
+
+.fun-text {
+  font-family: 'Warnes', cursive;
+}

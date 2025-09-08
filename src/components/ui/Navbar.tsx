@@ -1,27 +1,33 @@
 import React from 'react'
+import ShinyText from '../ShinyText';
 
 const Navbar: React.FC = () => {
   return (
-    <nav className="bg-gray-800 text-white p-4 fixed w-full top-0 z-10 shadow-md">
-      <div className="container mx-auto flex justify-between items-center">
-        <div className="text-2xl font-bold">        
-        </div>
-        <div className="hidden md:flex space-x-6">
-          <a href="/" className="hover:text-gray-300 transition-colors">
+    <nav className="bg-blue-950 text-white p-6 fixed w-full top-0 z-10 shadow-md h-22">
+      <div className="  w-full mx-auto px-4 flex justify-between items-center">
+        <ShinyText 
+  text="Just some shiny text!" 
+  disabled={false} 
+  speed={3} 
+  className='custom-class  text-4xl' 
+/>
+       
+        <div className="hidden md:flex space-x-8">
+          <a href="/" className="text-2xl hover:text-gray-200 hover:scale-105 transition-all duration-300">
             Home
           </a>
-          <a href="/apply" className="hover:text-gray-300 transition-colors">
+          <a href="/apply" className="text-2xl hover:text-gray-200 hover:scale-105 transition-all duration-300">
             Apply
           </a>
         </div>
         <div className="md:hidden">
           <button
-            className="focus:outline-none"
+            className="text-white hover:bg-gray-700 p-2 rounded-md transition-all duration-300"
             onClick={() => {
             }}
           >
             <svg
-              className="w-6 h-6"
+              className="w-8 h-8"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
