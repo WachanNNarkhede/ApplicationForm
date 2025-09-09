@@ -19,15 +19,10 @@ export default function ApplicationForm() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name } = e.target;
     let { value } = e.target;
-if (name === "phone") {
-    value = value.replace(/\D/g, "");
-    const phoneRegex = /^\d{10}$/;
-    if (value && !phoneRegex.test(value)) {
-      toast.error("Phone number must be exactly 10 digits");
-      return;
-    }
-  }
 
+    if (name === "phone") {
+      value = value.replace(/\D/g, "");
+    }
     setFormData({
       ...formData,
       [name]: value,
@@ -51,9 +46,10 @@ if (name === "phone") {
         return;
       }
 
-      const re = /^[a-zA-Z0-9_ ]+$/;
-      if(!re.test(formData.name && formData.address )){
-        toast.error("Please dont use Symboles in Name and Adress",  {
+      const phone = /^\d{10}$/;
+
+      if (!phone.test(formData.phone)) {
+        toast.error("Please enter a valid Phone Number", {
           position: "top-right",
           autoClose: 3000,
           hideProgressBar: false,
@@ -64,7 +60,21 @@ if (name === "phone") {
         });
         return;
       }
-    
+
+      const re = /^[a-zA-Z0-9_ ]+$/;
+      if (!re.test(formData.name && formData.address)) {
+        toast.error("Please dont use Symboles in Name and Adress", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
+        return;
+      }
+
       localStorage.setItem("formData", JSON.stringify(formData));
 
       dispatch(updatePersnalInfo(formData));
@@ -78,7 +88,7 @@ if (name === "phone") {
 
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem("formData") || "{}");
-    if (saved && Object.keys(saved).length > 0) {
+    if (saved) {
       setFormData(saved);
       dispatch(updatePersnalInfo(saved));
       setIsUploaded(true);
@@ -86,17 +96,17 @@ if (name === "phone") {
   }, [dispatch]);
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-[550px] bg-gray-100 md:p-8">
+    <div className="flex flex-col  items-center justify-start min-h-[550px] bg-gray-100 md:p-8">
       <h2 className="text-3xl font-extrabold heading text-blue-600 mb-6">
         Personal Information
       </h2>
-      \
-      <form className="border border-gray- bg-white p-16 max-w-4xl w-full rounded-lg shadow-md">
+      
+      <form className="border  bg-white p-16 max-w-4xl w-full rounded-lg shadow-lg">
         <Table className="w-full ">
           <TableBody>
             <TableRow>
               <TableCell className="w-1/4">
-                <Label className="text-xl font-medium">Name</Label>
+                <Label className="text-xl font-bold text-blue-400">Name</Label>
               </TableCell>
               <TableCell className="w-3/4">
                 <Input
@@ -112,7 +122,7 @@ if (name === "phone") {
 
             <TableRow>
               <TableCell className="w-1/4">
-                <Label className="text-xl font-medium">Email</Label>
+                <Label className="text-xl font-bold text-blue-400" >Email</Label>
               </TableCell>
               <TableCell className="w-3/4">
                 <Input
@@ -129,7 +139,7 @@ if (name === "phone") {
 
             <TableRow>
               <TableCell className="w-1/4">
-                <Label className="text-xl font-medium">Phone</Label>
+                <Label className="text-xl font-bold text-blue-400">Phone</Label>
               </TableCell>
               <TableCell className="w-3/4">
                 <Input
@@ -149,7 +159,7 @@ if (name === "phone") {
 
             <TableRow>
               <TableCell className="w-1/4">
-                <Label className="text-xl font-medium">Address</Label>
+                <Label className="text-xl font-bold text-blue-400">Address</Label>
               </TableCell>
               <TableCell className="w-3/4">
                 <Input

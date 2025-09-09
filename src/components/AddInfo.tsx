@@ -82,14 +82,14 @@ const AddInfo: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center h-[550px] bg-gray-100 p-6 md:p-8">
       <h2 className="text-3xl transform -translate-y-8 font-extrabold heading text-blue-600 mb-1">
-        Education Details
+        Documents Upload
       </h2>
       <form
         onSubmit={handleSubmit}
         className="space-y-6 p-8 border border-gray-300 rounded-lg bg-white max-w-4xl w-full shadow-md"
       >
         <div className="space-y-3">
-          <Label htmlFor="resume" className="text-xl font-medium">
+          <Label htmlFor="resume" className="text-xl font-bold text-blue-400">
             Upload Resume
           </Label>
           <Input
@@ -101,7 +101,7 @@ const AddInfo: React.FC = () => {
           />
         </div>
         <div className="space-y-3">
-          <Label htmlFor="coverLetter" className="text-xl font-medium">
+          <Label htmlFor="coverLetter" className="text-xl font-bold text-blue-400">
             Upload Cover Letter
           </Label>
           <Input
@@ -113,9 +113,9 @@ const AddInfo: React.FC = () => {
           />
         </div>
         <div className="space-y-3">
-          <Label className="text-xl font-medium">Uploaded Resume</Label>
+          <Label className="text-xl font-bold text-blue-600">Uploaded Resume</Label>
           <p className="text-base">{resumeName || "No resume uploaded"}</p>
-          <Label className="text-xl font-medium">Uploaded Cover Letter</Label>
+          <Label className="text-xl font-bold text-blue-600">Uploaded Cover Letter</Label>
           <p className="text-base">
             {coverLetterName || "No cover letter uploaded"}
           </p>

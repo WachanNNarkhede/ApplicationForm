@@ -122,16 +122,16 @@ const WorkExp: React.FC<WorkExpProps> = ({ onSubmit }) => {
         <Table className="w-full max-h-[400px] overflow-auto">
           <TableHeader>
             <TableRow>
-              <TableHead className="w-2/5 text-xl font-medium">
+              <TableHead className="w-2/5 text-xl font-bold text-blue-400">
                 Company Name
               </TableHead>
-              <TableHead className="w-2/5 text-xl font-medium">
+              <TableHead className="w-2/5 text-xl font-bold text-blue-400">
                 Job Title
               </TableHead>
-              <TableHead className="w-1/5 text-xl font-medium">
+              <TableHead className="w-1/5 text-xl font-bold text-blue-400">
                 Duration (Years)
               </TableHead>
-              <TableHead className="w-1/5 text-xl font-medium">
+              <TableHead className="w-1/5 text-xl font-bold text-blue-400">
                 Actions
               </TableHead>
             </TableRow>
@@ -242,7 +242,7 @@ const WorkExp: React.FC<WorkExpProps> = ({ onSubmit }) => {
               variant="outline"
               className="text-base bg-black text-white px-8 py-3"
             >
-              {isUploaded ? "Update" : "Submit"}
+            Save
             </Button>
           </div>
         </ClickSpark>

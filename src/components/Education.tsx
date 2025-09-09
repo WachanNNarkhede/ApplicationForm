@@ -36,7 +36,12 @@ const handleChange = (
   }
 
   if (name === "passingyear") {
-    newValue = value.replace(/\D/g, "").slice(0, 4);
+
+    const year = value.replace(/\D/g, "").slice(0, 4);
+    if(Number(year) >= 2031 ){
+      toast.error("must me under 2031")
+    }
+    newValue = year && Number(year) <= 2031  ? year : "";
   }
 
   setFormData((prev) => ({
@@ -66,7 +71,9 @@ const handleChange = (
       formData.hsc.passingyear,
       formData.graduation.passingyear,
       formData.postgraduation.passingyear,
-    ].every((year) => /^\d{4}$/.test(year));
+    ].every((year) => /^\d{4}$/.test(year) && Number(year) > 1970 && Number(year) <= 2025);
+
+
 
     if (isComplete && isValidYear) {
       localStorage.setItem("educationData", JSON.stringify(formData));
@@ -87,7 +94,7 @@ const handleChange = (
       setIsUploaded(true);
     } else {
       const errorMessage = isComplete
-        ? "All passing years must be exactly 4 digits (e.g., 2023)"
+        ? "All passing years must be exactly 4 digits and betwwen 1970 and 2031 (e.g., 2023)"
         : "Please complete all fields and ensure passing years are 4 digits";
       toast.error(errorMessage, {
         position: "top-right",
@@ -139,21 +146,21 @@ const handleChange = (
           <TableBody>
             <TableRow>
               <TableCell className="w-1/4">
-                <Label className="text-xl font-medium">School</Label>
+                <Label className="text-xl font-bold text-blue-400">School</Label>
               </TableCell>
               <TableCell className="w-1/4">
-                <Label className="text-xl font-medium">Board/University</Label>
+                <Label className="text-xl font-bold text-blue-400">Board/University</Label>
               </TableCell>
               <TableCell className="w-1/4">
-                <Label className="text-xl font-medium">CGPA</Label>
+                <Label className="text-xl font-bold text-blue-400">CGPA</Label>
               </TableCell>
               <TableCell className="w-1/4">
-                <Label className="text-xl font-medium">Passing Year</Label>
+                <Label className="text-xl font-bold text-blue-400">Passing Year</Label>
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell className="w-1/4">
-                <Label className="text-xl font-medium">SSC</Label>
+                <Label className="text-xl font-bold text-blue-400">SSC</Label>
               </TableCell>
               <TableCell className="w-1/4">
                 <Input
@@ -178,7 +185,7 @@ const handleChange = (
               <TableCell className="w-1/4">
                 <Input
                   name="passingyear"
-                  type="number"
+                  type="text"
                   value={formData.ssc.passingyear}
                   placeholder="Enter Passing Year"
                   maxLength={4}
@@ -190,7 +197,7 @@ const handleChange = (
             </TableRow>
             <TableRow>
               <TableCell className="w-1/4">
-                <Label className="text-xl font-medium">HSC</Label>
+                <Label className="text-xl font-bold text-blue-400">HSC</Label>
               </TableCell>
               <TableCell className="w-1/4">
                 <Input
@@ -226,7 +233,7 @@ const handleChange = (
             </TableRow>
             <TableRow>
               <TableCell className="w-1/4">
-                <Label className="text-xl font-medium">Graduation</Label>
+                <Label className="text-xl font-bold text-blue-400">Graduation</Label>
               </TableCell>
               <TableCell className="w-1/4">
                 <Input
@@ -262,7 +269,7 @@ const handleChange = (
             </TableRow>
             <TableRow>
               <TableCell className="w-1/4">
-                <Label className="text-xl font-medium">Post Graduation</Label>
+                <Label className="text-xl font-bold text-blue-400">Post Graduation</Label>
               </TableCell>
               <TableCell className="w-1/4">
                 <Input
