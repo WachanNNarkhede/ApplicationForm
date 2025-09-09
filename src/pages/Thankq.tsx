@@ -1,7 +1,6 @@
 // src/pages/ThankYou.tsx
 import { CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision";
 import { PixelatedCanvas } from "@/components/ui/pixelated-canvas";
 import Spline from '@splinetool/react-spline';
 
@@ -46,7 +45,6 @@ export default function ThankYou() {
         shaping futures
       </div>
       
-      <BackgroundBeamsWithCollision className="bg-transparent z-10">
         <div className="max-w-md w-full bg-white/10 backdrop-blur-lg rounded-2xl ml- shadow-2xl p-12 text-center border border-white/20">
           <div className="flex justify-center mb-6">
             <CheckCircle className="w-20 h-20 text-green-400 animate-bounce" />
@@ -68,8 +66,6 @@ export default function ThankYou() {
             </button>
           </div>
         </div>
-      </BackgroundBeamsWithCollision>
-
       <PixelatedCanvas
         src="/rocket.png"
         width={400}
