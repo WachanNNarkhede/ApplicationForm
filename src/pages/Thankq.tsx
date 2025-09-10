@@ -66,6 +66,7 @@ export default function ThankYou() {
             </button>
           </div>
         </div>
+
       <PixelatedCanvas
         src="/rocket.png"
         width={400}
@@ -85,7 +86,7 @@ export default function ThankYou() {
         sampleAverage
         tintColor="#FFFFFF"
         tintStrength={0.2}
-        className="rounded-xl mr-10 mt-96 z-20"
+        className="rounded-xl mr- mt-96 z-20"
       />
     </div>
   );

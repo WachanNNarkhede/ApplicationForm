@@ -21,9 +21,8 @@ interface Education {
 }
 
 interface SkillndQua {
-  skill: string,
-  certificate: string
-
+  skill: string;
+  certificate: string;
 }
 
 interface WorkExpRow {
@@ -32,6 +31,7 @@ interface WorkExpRow {
   title: string;
   duration: string;
 }
+
 export interface ApplicationTypes {
   personalInfo: PersonalInfo;
   education: Education;
@@ -45,37 +45,34 @@ export const initialState: ApplicationTypes = {
   personalInfo: {
     name: "",
     email: "",
-    phone: '',
+    phone: "",
     address: "",
   },
   education: {
-    ssc: { university: "", cgpa: '', passingyear: '' },
-    hsc: { university: "", cgpa: '', passingyear: '' },
-    graduation: { university: "", cgpa: '', passingyear: '' },
-    postgraduation: { university: "", cgpa: '', passingyear: '' },
+    ssc: { university: "", cgpa: "", passingyear: "" },
+    hsc: { university: "", cgpa: "", passingyear: "" },
+    graduation: { university: "", cgpa: "", passingyear: "" },
+    postgraduation: { university: "", cgpa: "", passingyear: "" },
   },
-
   resume: null,
   coverLetter: null,
   skillndqua: {
-    skill: '',
-    certificate: ""
+    skill: "",
+    certificate: "",
   },
   workExp: [],
-
-
 };
+
 const applicationformSlice = createSlice({
   name: "applicationform",
   initialState,
   reducers: {
-    updatePersnalInfo(state, action) {
+    updatePersnalInfo(state, action: PayloadAction<Partial<PersonalInfo>>) {
       state.personalInfo = {
         ...state.personalInfo,
-        ...action.payload
-      }
+        ...action.payload,
+      };
     },
-
     updateEducation(
       state,
       action: PayloadAction<{ edu: keyof Education; data: Partial<EducationEntry> }>
@@ -90,17 +87,25 @@ const applicationformSlice = createSlice({
       state.coverLetter = action.payload;
     },
     setSkilladQua(state, action: PayloadAction<SkillndQua>) {
-      state.skillndqua = action.payload
+      state.skillndqua = action.payload;
     },
     setWorkExp(state, action: PayloadAction<WorkExpRow[]>) {
       state.workExp = action.payload;
     },
     resetApplicationForm() {
-      return initialState; 
+      return initialState;
     },
   },
 });
 
-export const { resetApplicationForm,updatePersnalInfo, updateEducation, setCoverLetter, setResume, setSkilladQua, setWorkExp } = applicationformSlice.actions;
+export const {
+  resetApplicationForm,
+  updatePersnalInfo,
+  updateEducation,
+  setCoverLetter,
+  setResume,
+  setSkilladQua,
+  setWorkExp,
+} = applicationformSlice.actions;
 
 export default applicationformSlice.reducer;

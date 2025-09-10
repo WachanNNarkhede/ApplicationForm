@@ -9,9 +9,8 @@ import { Button } from "@/components/ui/button";
 import Navbar from "@/components/ui/Navbar";
 import ClickSpark from "@/components/ui/page.tsx/ClickSpark/ClickSpark";
 import WorkExp from "@/components/WorkExp";
-// import { useNavigate } from "react-router-dom";
-import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   updatePersnalInfo,
   updateEducation,
@@ -23,7 +22,6 @@ import {
 } from "@/app/slices";
 
 const Page1 = () => {
-  // const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [countend, setCountEnd] = useState(0);
   const { personalInfo, education, skillndqua, workExp, resume, coverLetter } =
@@ -38,22 +36,26 @@ const Page1 = () => {
     reviewSubmit: false,
   });
 
+  const stepKeys: (keyof typeof submissionStatus)[] = [
+    "personalInfo",
+    "education",
+    "workExp",
+    "skillndqua",
+    "addInfo",
+    "reviewSubmit",
+  ];
+
   useEffect(() => {
     const formData = JSON.parse(localStorage.getItem("formData") || "{}");
     if (formData && Object.keys(formData).length > 0) {
       dispatch(updatePersnalInfo(formData));
     }
-    const educationData = JSON.parse(
-      localStorage.getItem("educationData") || "{}"
-    );
+
+    const educationData = JSON.parse(localStorage.getItem("educationData") || "{}");
     if (educationData && Object.keys(educationData).length > 0) {
-      (Object.keys(educationData) as (keyof typeof education)[]).forEach(
-        (eduKey) => {
-          dispatch(
-            updateEducation({ edu: eduKey, data: educationData[eduKey] })
-          );
-        }
-      );
+      (Object.keys(educationData) as (keyof typeof education)[]).forEach((eduKey) => {
+        dispatch(updateEducation({ edu: eduKey, data: educationData[eduKey] }));
+      });
     }
 
     const skillsData = JSON.parse(localStorage.getItem("skills") || "{}");
@@ -81,10 +83,7 @@ const Page1 = () => {
     const personalInfoSubmitted =
       formData.name && formData.email && formData.phone && formData.address;
 
-    const educationData = JSON.parse(
-      localStorage.getItem("educationData") || "{}"
-    );
-
+    const educationData = JSON.parse(localStorage.getItem("educationData") || "{}");
     const educationSubmitted =
       educationData.graduation?.university &&
       educationData.graduation?.cgpa &&
@@ -125,35 +124,202 @@ const Page1 = () => {
       workExp: workExpSubmitted,
       skillndqua: skillsSubmitted,
       addInfo: addInfoSubmitted,
-      reviewSubmit: reviewSubmitSubmitted && countend != 0,
+      reviewSubmit: reviewSubmitSubmitted && countend !== 0,
     });
   };
 
   useEffect(() => {
     checkSubmissionStatus();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    stepcount,
-    personalInfo,
-    education,
-    workExp,
-    skillndqua,
-    resume,
-    coverLetter,
-  ]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stepcount, personalInfo, education, workExp, skillndqua, resume, coverLetter]);
 
-  const handleNext = () => {
-    if (isStepCompleted(stepcount)) {
-      setStepCount(stepcount + 1);
-    } else {
-      toast.error(
-        "Please fill all the fields in this section before continuing.",
-        {
+  const handlePersonalInfoSubmit = () => {
+    if (personalInfo.address && personalInfo.email && personalInfo.name && personalInfo.phone) {
+      const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,}$/;
+      if (!emailRegex.test(personalInfo.email)) {
+        toast.error("Please enter a valid email address", {
           position: "top-right",
           autoClose: 3000,
           theme: "colored",
-        }
-      );
+        });
+        return false;
+      }
+
+      const phone = /^\d{10}$/;
+      if (!phone.test(personalInfo.phone)) {
+        toast.error("Please enter a valid 10-digit phone number", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
+        return false;
+      }
+
+      const re = /^[a-zA-Z0-9_ ]+$/;
+      if (!re.test(personalInfo.name) || !re.test(personalInfo.address)) {
+        toast.error("Name and Address should not contain special symbols", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
+        return false;
+      }
+
+      localStorage.setItem("formData", JSON.stringify(personalInfo));
+      dispatch(updatePersnalInfo(personalInfo));
+      toast.success("Personal Information submitted!", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+      return true;
+    } else {
+      toast.error("Please complete all personal information fields", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+      return false;
+    }
+  };
+
+  const handleEducationSubmit = () => {
+    const isComplete =
+      education.graduation.cgpa &&
+      education.graduation.passingyear &&
+      education.graduation.university &&
+      education.hsc.cgpa &&
+      education.hsc.passingyear &&
+      education.hsc.university &&
+      education.postgraduation.cgpa &&
+      education.postgraduation.passingyear &&
+      education.postgraduation.university &&
+      education.ssc.cgpa &&
+      education.ssc.passingyear &&
+      education.ssc.university;
+
+    const isValidYear = [
+      education.ssc.passingyear,
+      education.hsc.passingyear,
+      education.graduation.passingyear,
+      education.postgraduation.passingyear,
+    ].every((year) => /^\d{4}$/.test(year) && Number(year) > 1970 && Number(year) <= 2031);
+
+    if (isComplete && isValidYear) {
+      localStorage.setItem("educationData", JSON.stringify(education));
+      (Object.keys(education) as (keyof typeof education)[]).forEach((eduKey) => {
+        dispatch(updateEducation({ edu: eduKey, data: education[eduKey] }));
+      });
+      toast.success("Education details submitted!", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+      return true;
+    } else {
+      const errorMessage = isComplete
+        ? "All passing years must be between 1970 and 2031 (e.g., 2023)"
+        : "Please complete all education fields";
+      toast.error(errorMessage, {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+      return false;
+    }
+  };
+
+  const handleSkillsSubmit = () => {
+    if (skillndqua.skill && skillndqua.certificate) {
+      localStorage.setItem("skills", JSON.stringify(skillndqua));
+      dispatch(setSkilladQua(skillndqua));
+      toast.success("Skills and Qualifications submitted!", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+      return true;
+    } else {
+      toast.error("Please enter at least one skill and one certification", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+      return false;
+    }
+  };
+
+  const handleWorkExpSubmit = () => {
+    if (workExp.length > 0 && workExp.every((row) => row.company && row.title && row.duration)) {
+      localStorage.setItem("exp", JSON.stringify(workExp));
+      dispatch(setWorkExp(workExp));
+      toast.success("Work Experience submitted!", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+      return true;
+    } else {
+      toast.error("Please add at least one complete work experience entry", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+      return false;
+    }
+  };
+
+  const handleAddInfoSubmit = () => {
+    const resumeData = localStorage.getItem("resume");
+    const coverLetterData = localStorage.getItem("coverLetter");
+    if (resumeData && coverLetterData) {
+      dispatch(setResume(resumeData));
+      dispatch(setCoverLetter(coverLetterData));
+      toast.success("Documents submitted!", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+      return true;
+    } else {
+      toast.error("Please upload both resume and cover letter", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+      return false;
+    }
+  };
+
+  const handleNext = () => {
+    let canProceed = false;
+
+    switch (stepcount) {
+      case 0:
+        canProceed = handlePersonalInfoSubmit();
+        break;
+      case 1:
+        canProceed = handleEducationSubmit();
+        break;
+      case 2:
+        canProceed = handleWorkExpSubmit();
+        break;
+      case 3:
+        canProceed = handleSkillsSubmit();
+        break;
+      case 4:
+        canProceed = handleAddInfoSubmit();
+        break;
+      case 5:
+        canProceed = handleSubmit();
+        break;
+      default:
+        canProceed = true;
+    }
+
+    if (canProceed && stepcount < 5) {
+      setStepCount(stepcount + 1);
+      checkSubmissionStatus();
     }
   };
 
@@ -166,60 +332,26 @@ const Page1 = () => {
 
   const handleSubmit = () => {
     if (
-      personalInfo?.name &&
-      personalInfo?.email &&
-      personalInfo?.phone &&
-      personalInfo?.address &&
-      education?.ssc?.university &&
-      education?.ssc?.cgpa &&
-      education?.ssc?.passingyear &&
-      education?.hsc?.university &&
-      education?.hsc?.cgpa &&
-      education?.hsc?.passingyear &&
-      education?.graduation?.university &&
-      education?.graduation?.cgpa &&
-      education?.graduation?.passingyear &&
-      education?.postgraduation?.university &&
-      education?.postgraduation?.cgpa &&
-      education?.postgraduation?.passingyear &&
-      skillndqua?.skill &&
-      skillndqua?.certificate &&
-      workExp?.length > 0 &&
-      resume &&
-      coverLetter
+      submissionStatus.personalInfo &&
+      submissionStatus.education &&
+      submissionStatus.workExp &&
+      submissionStatus.skillndqua &&
+      submissionStatus.addInfo
     ) {
-      checkSubmissionStatus();
       setCountEnd(1);
-
       localStorage.setItem("formSubmitted", "true");
-window.location.href='/submited';
+      window.location.href = "/submited";
       dispatch(resetApplicationForm());
-
+      return true;
     } else {
-      toast.error("Please fill all fields before submitting.", {
+      toast.error("Please complete all sections before submitting.", {
         position: "top-right",
         autoClose: 3000,
         theme: "colored",
       });
+      return false;
     }
   };
-  const isStepCompleted = (step: number) => {
-    switch (step) {
-      case 0:
-        return submissionStatus.personalInfo;
-      case 1:
-        return submissionStatus.education;
-      case 2:
-        return submissionStatus.workExp;
-      case 3:
-        return submissionStatus.skillndqua;
-      case 4:
-        return submissionStatus.addInfo;
-      default:
-        return false;
-    }
-  };
-  
 
   const handlestepchangefromIndicator = (step: number) => {
     if (step === stepcount) {
@@ -234,46 +366,24 @@ window.location.href='/submited';
       });
       return;
     }
-
-    let canNavigate = true;
-    for (let i = 0; i < step; i++) {
-      if (!isStepCompleted(i)) {
-        canNavigate = false;
-        break;
-      }
-    }
-
-    if (canNavigate || (step === stepcount + 1 && isStepCompleted(stepcount))) {
-      setStepCount(step);
-    } else {
-      toast.error(`Complete ${getStepName(step - 1)} first.`, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-      });
-    }
+    setStepCount(step);
+    checkSubmissionStatus();
+    toast.success(`Navigated to ${getStepName(step)}.`, {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
+    });
   };
 
   const getStepName = (step: number) => {
     switch (step) {
-      case 0:
-        return "Personal Information";
-      case 1:
-        return "Education";
-      case 2:
-        return "Work Experience";
-      case 3:
-        return "Skills and Qualifications";
-      case 4:
-        return "Additional Information";
-      case 5:
-        return "Review and Submit";
-      default:
-        return "";
+      case 0: return "Personal Information";
+      case 1: return "Education";
+      case 2: return "Work Experience";
+      case 3: return "Skills and Qualifications";
+      case 4: return "Additional Information";
+      case 5: return "Review and Submit";
+      default: return "";
     }
   };
 
@@ -281,98 +391,22 @@ window.location.href='/submited';
     <div className="bg-gray-50 h-screen">
       <Navbar />
       <ToastContainer />
-      <div className="mt-16 ">
-        <div className="flex justify-center items-center gap-18 transform translate-y-24 relative ">
-          <div
-            onClick={() => handlestepchangefromIndicator(0)}
-            className={`relative w-16 h-16 flex items-center justify-center rounded-full border-2 font-medium text-sm cursor-pointer transition-all duration-200 hover:border-blue-500 z-10 ${
-              submissionStatus.personalInfo
-                ? "bg-blue-600 border-blue-600 text-white"
-                : "bg-gray-100 border-gray-400 text-gray-600"
-            } ${stepcount === 0 ? "ring-6 ring-blue-300 ring-opacity-50" : ""}`}
-            title={
-              submissionStatus.personalInfo
-                ? "Personal Info Submitted"
-                : "Personal Info Not Submitted"
-            }
-          >
-            1
-          </div>
-          <div
-            onClick={() => handlestepchangefromIndicator(1)}
-            className={`relative w-16 h-16  flex items-center justify-center rounded-full border-2 font-medium text-sm cursor-pointer transition-all duration-200 hover:border-blue-500 z-10 ${
-              submissionStatus.education
-                ? "bg-blue-600 border-blue-600 text-white"
-                : "bg-gray-100 border-gray-400 text-gray-600"
-            } ${stepcount === 1 ? "ring-6 ring-blue-300 ring-opacity-50" : ""}`}
-            title={
-              submissionStatus.education
-                ? "Education Submitted"
-                : "Education Not Submitted"
-            }
-          >
-            2
-          </div>
-          <div
-            onClick={() => handlestepchangefromIndicator(2)}
-            className={`relative w-16 h-16  flex items-center justify-center rounded-full border-2 font-medium text-sm cursor-pointer transition-all duration-200 hover:border-blue-500 z-10 ${
-              submissionStatus.workExp
-                ? "bg-blue-600 border-blue-600 text-white"
-                : "bg-gray-100 border-gray-400 text-gray-600"
-            } ${stepcount === 2 ? "ring-6 ring-blue-300 ring-opacity-50" : ""}`}
-            title={
-              submissionStatus.workExp
-                ? "Work Experience Submitted"
-                : "Work Experience Not Submitted"
-            }
-          >
-            3
-          </div>
-          <div
-            onClick={() => handlestepchangefromIndicator(3)}
-            className={`relative w-16 h-16  flex items-center justify-center rounded-full border-2 font-medium text-sm cursor-pointer transition-all duration-200 hover:border-blue-500 z-10 ${
-              submissionStatus.skillndqua
-                ? "bg-blue-600 border-blue-600 text-white"
-                : "bg-gray-100 border-gray-400 text-gray-600"
-            } ${stepcount === 3 ? "ring-6 ring-blue-300 ring-opacity-50" : ""}`}
-            title={
-              submissionStatus.skillndqua
-                ? "Skills Submitted"
-                : "Skills Not Submitted"
-            }
-          >
-            4
-          </div>
-          <div
-            onClick={() => handlestepchangefromIndicator(4)}
-            className={`relative w-16 h-16  flex items-center justify-center rounded-full border-2 font-medium text-sm cursor-pointer transition-all duration-200 hover:border-blue-500 z-10 ${
-              submissionStatus.addInfo
-                ? "bg-blue-600 border-blue-600 text-white"
-                : "bg-gray-100 border-gray-400 text-gray-600"
-            } ${stepcount === 4 ? "ring-6 ring-blue-300 ring-opacity-50" : ""}`}
-            title={
-              submissionStatus.addInfo
-                ? "Documents Submitted"
-                : "Documents Not Submitted"
-            }
-          >
-            5
-          </div>
-          <div
-            onClick={() => handlestepchangefromIndicator(5)}
-            className={`relative w-16 h-16  flex items-center justify-center rounded-full border-2 font-medium text-sm cursor-pointer transition-all duration-200 hover:border-blue-500 z-10 ${
-              submissionStatus.reviewSubmit
-                ? "bg-blue-600 border-blue-600 text-white"
-                : "bg-gray-100 border-gray-400 text-gray-600"
-            } ${stepcount === 5 ? "ring-6 ring-blue-300 ring-opacity-50" : ""}`}
-            title={
-              submissionStatus.reviewSubmit
-                ? "All Sections Submitted"
-                : "Not Submitted"
-            }
-          >
-            6
-          </div>
+      <div className="mt-16">
+        <div className="flex justify-center items-center gap-18 transform translate-y-24 relative">
+          {stepKeys.map((key, index) => (
+            <div
+              key={index}
+              onClick={() => handlestepchangefromIndicator(index)}
+              className={`relative w-16 h-16 flex items-center justify-center rounded-full border-2 font-medium text-sm cursor-pointer transition-all duration-200 hover:border-blue-500 z-10 ${
+                submissionStatus[key]
+                  ? "bg-blue-600 border-blue-600 text-white"
+                  : "bg-gray-100 border-gray-400 text-gray-600"
+              } ${stepcount === index ? "ring-6 ring-blue-300 ring-opacity-50" : ""}`}
+              title={submissionStatus[key] ? `${getStepName(index)} Submitted` : `${getStepName(index)} Not Submitted`}
+            >
+              {index + 1}
+            </div>
+          ))}
         </div>
       </div>
       <div className="mt-26 p-4 md:p-8 max-w-7xl mx-auto">
@@ -405,22 +439,10 @@ window.location.href='/submited';
             <PersonalInformation />
           </div>
         )}
-        <ClickSpark
-          sparkColor="#fff"
-          sparkSize={20}
-          sparkRadius={35}
-          sparkCount={12}
-          duration={400}
-        >
-          <div className="mt-12">
+        <ClickSpark sparkColor="#fff" sparkSize={20} sparkRadius={35} sparkCount={12} duration={400}>
+          <div className="mt-12 flex justify-between">
             {stepcount > 0 && (
-              <ClickSpark
-                sparkColor="#fff"
-                sparkSize={10}
-                sparkRadius={15}
-                sparkCount={8}
-                duration={400}
-              >
+              <ClickSpark sparkColor="#fff" sparkSize={10} sparkRadius={15} sparkCount={8} duration={400}>
                 <Button
                   onClick={handlePrevious}
                   className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-md"
@@ -430,42 +452,16 @@ window.location.href='/submited';
                 </Button>
               </ClickSpark>
             )}
-
-            {stepcount < 5 ? (
-              <ClickSpark
-                sparkColor="#fff"
-                sparkSize={10}
-                sparkRadius={15}
-                sparkCount={8}
-                duration={400}
+            <ClickSpark sparkColor="#fff" sparkSize={10} sparkRadius={15} sparkCount={8} duration={400}>
+              <Button
+                onClick={handleNext}
+                className={`px-6 py-2 rounded-md text-white ${
+                  stepcount === 5 ? "bg-green-600 hover:bg-green-700" : "bg-blue-600 hover:bg-blue-700"
+                }`}
               >
-                <Button
-                  onClick={handleNext}
-                  className={`px-6 transform translate-x-255 -translate-y-8 py-2 rounded-md text-white ${
-                    isStepCompleted(stepcount)
-                      ? "bg-blue-600 hover:bg-blue-700"
-                      : "bg-gray-400 cursor-not-allowed"
-                  }`}
-                >
-                  Next
-                </Button>
-              </ClickSpark>
-            ) : (
-              <ClickSpark
-                sparkColor="#fff"
-                sparkSize={10}
-                sparkRadius={15}
-                sparkCount={8}
-                duration={400}
-              >
-                <Button
-                  onClick={handleSubmit}
-                  className="bg-green-600 hover:bg-green-700 text-white px-8 py-2 rounded-md font-semibold transform translate-x-255 -translate-y-8"
-                >
-                  Submit
-                </Button>
-              </ClickSpark>
-            )}
+                {stepcount === 5 ? "Submit" : "Next"}
+              </Button>
+            </ClickSpark>
           </div>
         </ClickSpark>
       </div>

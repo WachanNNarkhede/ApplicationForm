@@ -9,11 +9,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useDispatch } from "react-redux";
-import { useAppSelector } from "@/app/hooks";
+import {  useAppSelector } from "@/app/hooks";
 import { setWorkExp } from "@/app/slices";
 import { toast } from "react-toastify";
 import ClickSpark from "./ui/page.tsx/ClickSpark/ClickSpark";
+import { useDispatch } from "react-redux";
 
 interface WorkExpRow {
   id: number;
@@ -35,8 +35,6 @@ const WorkExp: React.FC<WorkExpProps> = ({ onSubmit }) => {
     duration: "",
   });
 
-  const [isUploaded, setIsUploaded] = useState(false);
-
   const handleAddChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (name === "duration") {
@@ -49,7 +47,12 @@ const WorkExp: React.FC<WorkExpProps> = ({ onSubmit }) => {
         setFormData((prev) => ({ ...prev, [name]: value }));
       } else {
         toast.error(
-          "Duration must be a number between 0 and 50 with up to 4 decimal places"
+          "Duration must be a number between 0 and 50 with up to 4 decimal places",
+          {
+            position: "top-right",
+            autoClose: 3000,
+            theme: "colored",
+          }
         );
         return;
       }
@@ -63,31 +66,19 @@ const WorkExp: React.FC<WorkExpProps> = ({ onSubmit }) => {
       const newRow = { id: Date.now(), ...formData };
       dispatch(setWorkExp([...workExp, newRow]));
       setFormData({ company: "", title: "", duration: "" });
-      setIsUploaded(true);
-      toast.success("Work experience added!");
-    } else {
-      alert("Please fill all fields before adding a row");
-    }
-    if (onSubmit) onSubmit();
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (
-      workExp.length > 0 &&
-      workExp.every((row) => row.company && row.title && row.duration)
-    ) {
-      localStorage.setItem("exp", JSON.stringify(workExp));
-      dispatch(setWorkExp(workExp));
-      toast.success(
-        isUploaded ? " Work experience updated!" : "Work experience submitted!"
-      );
-      setIsUploaded(true);
+      localStorage.setItem("exp", JSON.stringify([...workExp, newRow]));
+      toast.success("Work experience added!", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
       if (onSubmit) onSubmit();
     } else {
-      toast.error(
-        "Please add at least one complete work experience entry before submitting."
-      );
+      toast.error("Please fill all fields before adding a row", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
     }
   };
 
@@ -95,20 +86,13 @@ const WorkExp: React.FC<WorkExpProps> = ({ onSubmit }) => {
     const updatedRows = workExp.filter((row) => row.id !== id);
     dispatch(setWorkExp(updatedRows));
     localStorage.setItem("exp", JSON.stringify(updatedRows));
-
-    if (updatedRows.length === 0) {
-      setIsUploaded(false);
-    }
+    toast.success("Work experience deleted!", {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
+    });
     if (onSubmit) onSubmit();
   };
-
-  // useEffect(() => {
-  //   const storedData = JSON.parse(localStorage.getItem("exp") || "[]");
-  //   if (Array.isArray(storedData) && storedData.length > 0) {
-  //     dispatch(setWorkExp(storedData));
-  //     setIsUploaded(true);
-  //   }
-  // }, [dispatch]);
 
   return (
     <div className="flex flex-col items-center justify-start min-h-[550px] bg-gray-100 p-2 md:p-4">
@@ -116,7 +100,7 @@ const WorkExp: React.FC<WorkExpProps> = ({ onSubmit }) => {
         Work Experience
       </h2>
       <form
-        onSubmit={handleSubmit}
+        onSubmit={(e) => e.preventDefault()}
         className="border border-gray-300 p-8 max-w-4xl w-full rounded-lg shadow-md flex flex-col bg-white max-h-[550px] overflow-auto"
       >
         <Table className="w-full max-h-[400px] overflow-auto">
@@ -159,7 +143,7 @@ const WorkExp: React.FC<WorkExpProps> = ({ onSubmit }) => {
               <TableCell className="w-1/5">
                 <Input
                   name="duration"
-                  type="number"
+                  type="text"
                   value={formData.duration}
                   onChange={handleAddChange}
                   placeholder="Enter duration"
@@ -229,23 +213,6 @@ const WorkExp: React.FC<WorkExpProps> = ({ onSubmit }) => {
             ))}
           </TableBody>
         </Table>
-        <ClickSpark
-          sparkColor="#fff"
-          sparkSize={20}
-          sparkRadius={35}
-          sparkCount={12}
-          duration={400}
-        >
-          <div className="flex justify-end items-center mt-8">
-            <Button
-              type="submit"
-              variant="outline"
-              className="text-base bg-black text-white px-8 py-3"
-            >
-            Save
-            </Button>
-          </div>
-        </ClickSpark>
       </form>
     </div>
   );
